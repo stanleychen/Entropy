@@ -20,8 +20,10 @@ namespace EntropyTests
         public static string WorkingDirectory { get; }
 #if NET46
             = AppDomain.CurrentDomain.BaseDirectory;
-#else
+#elif NETCOREAPP2_0
             = AppContext.BaseDirectory;
+#else
+#error Target framework needs to be updated
 #endif
 
         public static void LogResponseOnFailedAssert(this ILogger logger, HttpResponseMessage response, string responseText, Action assert)
@@ -61,7 +63,7 @@ namespace EntropyTests
                     SiteName = "HttpTestSite",
                     ServerConfigTemplateContent = serverType == ServerType.Nginx ? File.ReadAllText(Path.Combine(WorkingDirectory, "nginx.conf")) : string.Empty,
                     PublishApplicationBeforeDeployment = true,
-                    TargetFramework = runtimeFlavor == RuntimeFlavor.Clr ? "net46" : "netcoreapp1.1",
+                    TargetFramework = runtimeFlavor == RuntimeFlavor.Clr ? "net46" : "netcoreapp2.0",
                     ApplicationType = runtimeFlavor == RuntimeFlavor.Clr ? ApplicationType.Standalone : ApplicationType.Portable
                 };
 
