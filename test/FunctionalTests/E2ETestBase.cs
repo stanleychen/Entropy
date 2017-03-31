@@ -3,6 +3,7 @@
 
 using System;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Server.IntegrationTesting;
@@ -94,7 +95,7 @@ namespace EntropyTests
             return RunTestAsync(ServerType.Nginx, RuntimeFlavor.CoreClr, RuntimeArchitecture.x64);
         }
 #elif NET46
-// E2E tests only need to be defined for one TFM.
+        // E2E tests only need to be defined for one TFM.
 #else
 #error NETCOREAPP1_1 is no longer defined. Update the TFMs in this file.
 #endif
@@ -105,15 +106,25 @@ namespace EntropyTests
         private Task RunTestAsync(
             ServerType serverType,
             RuntimeFlavor runtimeFlavor,
-            RuntimeArchitecture architecture)
+            RuntimeArchitecture architecture,
+            [CallerMemberName] string testName = null)
         {
-            return TestServices.RunSiteTest(
-                _siteName,
-                serverType,
-                runtimeFlavor,
-                architecture,
-                _output,
-                ValidateAsync);
+            testName = $"{GetType().FullName}.{testName}";
+            try
+            {
+                Console.WriteLine($"Starting test {testName}");
+                return TestServices.RunSiteTest(
+                    _siteName,
+                    serverType,
+                    runtimeFlavor,
+                    architecture,
+                    _output,
+                    ValidateAsync);
+            }
+            finally
+            {
+                Console.WriteLine($"Finished test {testName}");
+            }
         }
 
         protected virtual async Task ValidateAsync(
