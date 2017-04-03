@@ -49,7 +49,7 @@ namespace EntropyTests
             ITestOutputHelper xunitOutput,
             Func<HttpClient, ILogger, CancellationToken, Task> validator)
         {
-            var factory = new LoggerFactory().AddXunit(xunitOutput);
+            var factory = new LoggerFactory().AddXunit(xunitOutput, LogLevel.Debug);
             var logger = factory.CreateLogger(siteName);
 
             using (logger.BeginScope("RunSiteTest"))
