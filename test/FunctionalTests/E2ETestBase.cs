@@ -132,6 +132,7 @@ namespace EntropyTests
             ILogger logger,
             CancellationToken token)
         {
+            logger.LogInformation("Performing Request");
             var response = await RetryHelper.RetryRequest(() =>
             {
                 return GetResponse(httpClient);

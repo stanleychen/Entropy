@@ -49,7 +49,7 @@ namespace EntropyTests
             ITestOutputHelper xunitOutput,
             Func<HttpClient, ILogger, CancellationToken, Task> validator)
         {
-            var factory = new LoggerFactory().AddXunit(xunitOutput, LogLevel.Debug);
+            var factory = new LoggerFactory().AddConsole().AddXunit(xunitOutput, LogLevel.Debug);
             var logger = factory.CreateLogger(siteName);
 
             using (logger.BeginScope("RunSiteTest"))
@@ -65,7 +65,7 @@ namespace EntropyTests
 
                 using (var deployer = ApplicationDeployerFactory.Create(deploymentParameters, factory))
                 {
-                    Console.WriteLine($"Running deployment for {siteName}:{serverType}:{runtimeFlavor}:{architecture}");
+                    logger.LogInformation($"Running deployment for {siteName}:{serverType}:{runtimeFlavor}:{architecture}");
                     var deploymentResult = await deployer.DeployAsync();
                     var httpClientHandler = new HttpClientHandler();
                     var httpClient = new HttpClient(httpClientHandler)
@@ -76,6 +76,7 @@ namespace EntropyTests
 
                     using (httpClient)
                     {
+                        logger.LogInformation($"Running validation for {siteName}:{serverType}:{runtimeFlavor}:{architecture}");
                         await validator(httpClient, logger, deploymentResult.HostShutdownToken);
                     }
                 }
